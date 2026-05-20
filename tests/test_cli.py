@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import patch
 
 from click.testing import CliRunner
 
@@ -51,3 +52,17 @@ def test_cli_deep_flag(tmp_path):
     assert result.exit_code == 0
     claude = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
     assert "Calculator" in claude or "hello" in claude
+
+
+@patch("repo2agent.llm_polisher._call_anthropic")
+def test_cli_llm_flag(mock_call, tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test-key")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    mock_call.return_value = "LLM polished description."
+
+    runner = CliRunner()
+    result = runner.invoke(main, [str(FIXTURES / "python_project"), "--output", str(tmp_path), "--llm"])
+    assert result.exit_code == 0
+    assert (tmp_path / "CLAUDE.md").exists()
+    claude = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
+    assert "LLM polished description." in claude

@@ -33,7 +33,7 @@ def main(
         click.echo(f"Scanning: {project_path}")
 
     try:
-        meta = analyze_project(project_path, deep=deep)
+        meta = analyze_project(project_path, deep=deep, llm=llm)
     except Exception as e:
         click.echo(f"Error scanning project: {e}", err=True)
         sys.exit(1)
