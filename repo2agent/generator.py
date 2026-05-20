@@ -86,14 +86,14 @@ class Generator:
 
     def _print_summary(self, meta: ProjectMeta) -> None:
         frameworks = f" ({' + '.join(meta.frameworks)})" if meta.frameworks else ""
-        print(f"\n📦 Project: {meta.name} ({', '.join(meta.languages)}{frameworks})")
-        print(f"📁 Structure: {self._flat_structure(meta.structure)}")
+        print(f"\n[Project] {meta.name} ({', '.join(meta.languages)}{frameworks})")
+        print(f"[Structure] {self._flat_structure(meta.structure)}")
         dep_count = len(meta.dependencies.get("prod", []))
-        print(f"🔗 Dependencies: {dep_count} production")
+        print(f"[Dependencies] {dep_count} production")
         if meta.scripts:
             first_script = next(iter(meta.scripts.values()))
-            print(f"🚀 Start: {first_script}")
-        print(f"✅ Would generate: CLAUDE.md, AGENTS.md, CONTRIBUTING.md, repo2agent.json\n")
+            print(f"[Start] {first_script}")
+        print(f"[Output] Would generate: CLAUDE.md, AGENTS.md, CONTRIBUTING.md, repo2agent.json\n")
 
     def _flat_structure(self, node: FileNode, prefix: str = "") -> str:
         dirs = []
