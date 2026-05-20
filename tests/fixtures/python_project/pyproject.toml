@@ -1,0 +1,5 @@
+[project]
+name = "sample-python"
+version = "0.1.0"
+description = "A sample Python project"
+dependencies = ["requests>=2.0"]
