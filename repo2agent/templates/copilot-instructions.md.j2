@@ -1,0 +1,22 @@
+# {{ meta.name }}
+
+{{ meta.description }}
+
+## Languages
+{{ meta.languages | join(", ") }}
+
+## Frameworks
+{% if meta.frameworks %}{{ meta.frameworks | join(", ") }}{% endif %}
+
+## Project Structure
+```
+{{ _render_tree(meta.structure, "") }}
+```
+
+## Dependencies
+{% for dep in meta.dependencies.prod %}- {{ dep }}
+{% endfor %}
+
+## Scripts
+{% for name, cmd in meta.scripts.items() %}- `{{ cmd }}` ({{ name }})
+{% endfor %}

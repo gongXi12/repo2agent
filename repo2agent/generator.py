@@ -41,6 +41,13 @@ class Generator:
         if "all" in formats or "json" in formats:
             self._write(output_dir / "repo2agent.json", self.render_json(meta))
 
+        if "all" in formats:
+            cursorrules = self._env.get_template("cursorrules.j2").render(meta=meta)
+            self._write(output_dir / ".cursorrules", cursorrules)
+
+            copilot = self._env.get_template("copilot-instructions.md.j2").render(meta=meta)
+            self._write(output_dir / ".github" / "copilot-instructions.md", copilot)
+
     def render_claude_md(self, meta: ProjectMeta) -> str:
         template = self._env.get_template("claude.md.j2")
         return template.render(meta=meta)

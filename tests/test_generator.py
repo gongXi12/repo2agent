@@ -38,3 +38,19 @@ def test_generate_dry_run(tmp_path, capsys):
     assert not (tmp_path / "CLAUDE.md").exists()
     captured = capsys.readouterr()
     assert "sample-python" in captured.out
+
+
+def test_generate_cursorrules(tmp_path):
+    meta = analyze_project(FIXTURES / "python_project")
+    gen = Generator()
+    gen.generate(meta, output_dir=tmp_path, formats=["all"])
+    assert (tmp_path / ".cursorrules").exists()
+    content = (tmp_path / ".cursorrules").read_text(encoding="utf-8")
+    assert "sample-python" in content
+
+
+def test_generate_copilot_instructions(tmp_path):
+    meta = analyze_project(FIXTURES / "python_project")
+    gen = Generator()
+    gen.generate(meta, output_dir=tmp_path, formats=["all"])
+    assert (tmp_path / ".github" / "copilot-instructions.md").exists()
