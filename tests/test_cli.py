@@ -43,3 +43,11 @@ def test_cli_invalid_path():
     runner = CliRunner()
     result = runner.invoke(main, ["/nonexistent/path"])
     assert result.exit_code != 0
+
+
+def test_cli_deep_flag(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(main, [str(FIXTURES / "python_project"), "--output", str(tmp_path), "--deep"])
+    assert result.exit_code == 0
+    claude = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
+    assert "Calculator" in claude or "hello" in claude

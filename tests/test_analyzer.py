@@ -36,3 +36,14 @@ def test_analyze_empty_directory(tmp_path):
     meta = analyze_project(tmp_path)
     assert meta.name is None or meta.name == tmp_path.name
     assert meta.structure.is_dir is True
+
+
+def test_analyze_python_project_deep():
+    project_path = FIXTURES / "python_project"
+    meta = analyze_project(project_path, deep=True)
+    assert len(meta.interfaces) > 0
+    func_names = [i.name for i in meta.interfaces if i.kind == "function"]
+    assert "hello" in func_names
+    assert "fetch_data" in func_names
+    class_names = [i.name for i in meta.interfaces if i.kind == "class"]
+    assert "Calculator" in class_names

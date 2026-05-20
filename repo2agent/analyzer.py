@@ -3,19 +3,24 @@ from __future__ import annotations
 from pathlib import Path
 
 from repo2agent.config_parser import parse_configs
+from repo2agent.deep_scanner import deep_scan
 from repo2agent.models import ProjectMeta
 from repo2agent.scanner import scan_directory
 
 README_MAX_LINES = 100
 
 
-def analyze_project(project_path: Path) -> ProjectMeta:
+def analyze_project(project_path: Path, *, deep: bool = False) -> ProjectMeta:
     project_path = project_path.resolve()
 
     structure = scan_directory(project_path)
     config = parse_configs(project_path)
     readme_excerpt = _read_readme(project_path)
     entry_points = _detect_entry_points(project_path, config)
+
+    interfaces = []
+    if deep:
+        interfaces = deep_scan(project_path, config["languages"])
 
     return ProjectMeta(
         name=config["name"] or project_path.name,
@@ -27,7 +32,7 @@ def analyze_project(project_path: Path) -> ProjectMeta:
         structure=structure,
         readme_excerpt=readme_excerpt,
         entry_points=entry_points,
-        interfaces=[],
+        interfaces=interfaces,
         has_tests=config["has_tests"],
         has_docs=config["has_docs"],
         has_ci=config["has_ci"],
