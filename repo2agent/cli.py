@@ -15,6 +15,7 @@ from repo2agent.generator import Generator
 @click.option("--llm", is_flag=True, help="Enable LLM polish (requires API key)")
 @click.option("--output", "-o", type=click.Path(), default=".", help="Output directory")
 @click.option("--format", "-f", "formats", type=click.Choice(["md", "json", "all"]), default="all", help="Output format")
+@click.option("--lang", "-l", type=click.Choice(["en", "zh"]), default="en", help="Output language (en/zh)")
 @click.option("--dry-run", is_flag=True, help="Print summary only, don't write files")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
 def main(
@@ -23,6 +24,7 @@ def main(
     llm: bool,
     output: str,
     formats: str,
+    lang: str,
     dry_run: bool,
     verbose: bool,
 ) -> None:
@@ -46,6 +48,7 @@ def main(
         output_dir=output_dir,
         formats=[formats],
         dry_run=dry_run,
+        lang=lang,
     )
 
     if not dry_run:

@@ -1,0 +1,60 @@
+# {{ meta.name }} — Agent 上下文
+
+## 项目概述
+
+{{ meta.description }}
+
+**编程语言:** {{ meta.languages | join(", ") }}
+{% if meta.frameworks %}**框架:** {{ meta.frameworks | join(", ") }}{% endif %}
+
+## 目录结构
+
+```
+{{ _render_tree(meta.structure, "") }}
+```
+
+## 任务拆解建议
+
+根据项目结构，以下是建议的任务划分：
+
+{% if meta.has_tests %}
+- **测试:** 项目中已存在测试基础设施
+{% endif %}
+{% if meta.has_docs %}
+- **文档:** 检测到 docs 目录
+{% endif %}
+{% if meta.has_ci %}
+- **CI/CD:** 检测到 GitHub Actions 工作流
+{% endif %}
+{% for lang in meta.languages %}
+- **{{ lang }}:** 核心应用代码
+{% endfor %}
+
+## 风险点
+
+{% if meta.dependencies.prod | length > 10 %}
+- 依赖数量较多（{{ meta.dependencies.prod | length }} 个生产依赖）— 建议进行依赖审计
+{% endif %}
+{% if not meta.has_tests %}
+- 未检测到测试目录 — 测试覆盖率未知
+{% endif %}
+{% if not meta.has_ci %}
+- 未检测到 CI 配置 — 无自动化质量门禁
+{% endif %}
+
+## 启动方式
+
+{% if meta.scripts %}{% for name, cmd in meta.scripts.items() %}
+- `{{ cmd }}`
+{% endfor %}{% endif %}
+
+{% if meta.interfaces %}
+## 核心接口
+
+{% for iface in meta.interfaces %}
+- `{{ iface.signature }}` ({{ iface.kind }}) — {{ iface.file_path }}
+{% endfor %}
+{% endif %}
+
+---
+*由 repo2agent 生成*

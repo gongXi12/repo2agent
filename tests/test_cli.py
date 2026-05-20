@@ -66,3 +66,20 @@ def test_cli_llm_flag(mock_call, tmp_path, monkeypatch):
     assert (tmp_path / "CLAUDE.md").exists()
     claude = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
     assert "LLM polished description." in claude
+
+
+def test_cli_lang_zh(tmp_path):
+    runner = CliRunner()
+    result = runner.invoke(main, [str(FIXTURES / "python_project"), "--output", str(tmp_path), "--lang", "zh"])
+    assert result.exit_code == 0
+    claude = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
+    assert "编程语言" in claude
+    agents = (tmp_path / "AGENTS.md").read_text(encoding="utf-8")
+    assert "项目概述" in agents
+
+
+def test_cli_lang_zh_dry_run(capsys):
+    runner = CliRunner()
+    result = runner.invoke(main, [str(FIXTURES / "python_project"), "--lang", "zh", "--dry-run"])
+    assert result.exit_code == 0
+    assert "项目" in result.output or "生产依赖" in result.output

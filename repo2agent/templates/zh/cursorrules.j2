@@ -1,0 +1,26 @@
+# {{ meta.name }}
+
+{{ meta.description }}
+
+## 技术栈
+- 编程语言: {{ meta.languages | join(", ") }}
+{% if meta.frameworks %}- 框架: {{ meta.frameworks | join(", ") }}{% endif %}
+
+## 项目结构
+```
+{{ _render_tree(meta.structure, "") }}
+```
+
+## 常用命令
+{% if meta.scripts %}{% for name, cmd in meta.scripts.items() %}
+- `{{ cmd }}` ({{ name }})
+{% endfor %}{% endif %}
+
+## 编码规范
+{% if "Python" in meta.languages %}
+- 遵循 PEP 8 规范
+- 使用类型注解
+{% endif %}
+{% if "JavaScript" in meta.languages or "TypeScript" in meta.languages %}
+- 遵循 ESLint/Prettier 配置
+{% endif %}

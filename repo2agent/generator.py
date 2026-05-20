@@ -16,48 +16,54 @@ class Generator:
         )
         self._env.globals["_render_tree"] = self._render_tree
 
+    def _template_path(self, name: str, lang: str) -> str:
+        if lang == "zh":
+            return f"zh/{name}"
+        return name
+
     def generate(
         self,
         meta: ProjectMeta,
         output_dir: Path,
         formats: list[str] | None = None,
         dry_run: bool = False,
+        lang: str = "en",
     ) -> None:
         if formats is None:
             formats = ["all"]
 
         if dry_run:
-            self._print_summary(meta)
+            self._print_summary(meta, lang)
             return
 
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
         if "all" in formats or "md" in formats:
-            self._write(output_dir / "CLAUDE.md", self.render_claude_md(meta))
-            self._write(output_dir / "AGENTS.md", self.render_agents_md(meta))
-            self._write(output_dir / "CONTRIBUTING.md", self.render_contributing_md(meta))
+            self._write(output_dir / "CLAUDE.md", self.render_claude_md(meta, lang))
+            self._write(output_dir / "AGENTS.md", self.render_agents_md(meta, lang))
+            self._write(output_dir / "CONTRIBUTING.md", self.render_contributing_md(meta, lang))
 
         if "all" in formats or "json" in formats:
             self._write(output_dir / "repo2agent.json", self.render_json(meta))
 
         if "all" in formats:
-            cursorrules = self._env.get_template("cursorrules.j2").render(meta=meta)
+            cursorrules = self._env.get_template(self._template_path("cursorrules.j2", lang)).render(meta=meta)
             self._write(output_dir / ".cursorrules", cursorrules)
 
-            copilot = self._env.get_template("copilot-instructions.md.j2").render(meta=meta)
+            copilot = self._env.get_template(self._template_path("copilot-instructions.md.j2", lang)).render(meta=meta)
             self._write(output_dir / ".github" / "copilot-instructions.md", copilot)
 
-    def render_claude_md(self, meta: ProjectMeta) -> str:
-        template = self._env.get_template("claude.md.j2")
+    def render_claude_md(self, meta: ProjectMeta, lang: str = "en") -> str:
+        template = self._env.get_template(self._template_path("claude.md.j2", lang))
         return template.render(meta=meta)
 
-    def render_agents_md(self, meta: ProjectMeta) -> str:
-        template = self._env.get_template("agents.md.j2")
+    def render_agents_md(self, meta: ProjectMeta, lang: str = "en") -> str:
+        template = self._env.get_template(self._template_path("agents.md.j2", lang))
         return template.render(meta=meta)
 
-    def render_contributing_md(self, meta: ProjectMeta) -> str:
-        template = self._env.get_template("contributing.md.j2")
+    def render_contributing_md(self, meta: ProjectMeta, lang: str = "en") -> str:
+        template = self._env.get_template(self._template_path("contributing.md.j2", lang))
         return template.render(meta=meta)
 
     def render_json(self, meta: ProjectMeta) -> str:
@@ -84,16 +90,26 @@ class Generator:
         }
         return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
-    def _print_summary(self, meta: ProjectMeta) -> None:
+    def _print_summary(self, meta: ProjectMeta, lang: str = "en") -> None:
         frameworks = f" ({' + '.join(meta.frameworks)})" if meta.frameworks else ""
-        print(f"\n[Project] {meta.name} ({', '.join(meta.languages)}{frameworks})")
-        print(f"[Structure] {self._flat_structure(meta.structure)}")
-        dep_count = len(meta.dependencies.get("prod", []))
-        print(f"[Dependencies] {dep_count} production")
-        if meta.scripts:
-            first_script = next(iter(meta.scripts.values()))
-            print(f"[Start] {first_script}")
-        print(f"[Output] Would generate: CLAUDE.md, AGENTS.md, CONTRIBUTING.md, repo2agent.json\n")
+        if lang == "zh":
+            print(f"\n[项目] {meta.name} ({', '.join(meta.languages)}{frameworks})")
+            print(f"[结构] {self._flat_structure(meta.structure)}")
+            dep_count = len(meta.dependencies.get("prod", []))
+            print(f"[依赖] {dep_count} 个生产依赖")
+            if meta.scripts:
+                first_script = next(iter(meta.scripts.values()))
+                print(f"[启动] {first_script}")
+            print(f"[输出] 将生成: CLAUDE.md, AGENTS.md, CONTRIBUTING.md, repo2agent.json\n")
+        else:
+            print(f"\n[Project] {meta.name} ({', '.join(meta.languages)}{frameworks})")
+            print(f"[Structure] {self._flat_structure(meta.structure)}")
+            dep_count = len(meta.dependencies.get("prod", []))
+            print(f"[Dependencies] {dep_count} production")
+            if meta.scripts:
+                first_script = next(iter(meta.scripts.values()))
+                print(f"[Start] {first_script}")
+            print(f"[Output] Would generate: CLAUDE.md, AGENTS.md, CONTRIBUTING.md, repo2agent.json\n")
 
     def _flat_structure(self, node: FileNode, prefix: str = "") -> str:
         dirs = []

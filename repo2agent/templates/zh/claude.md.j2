@@ -1,0 +1,59 @@
+# {{ meta.name }}
+
+{{ meta.description }}
+
+{% if meta.readme_excerpt %}
+## 项目简介
+
+{{ meta.readme_excerpt }}
+{% endif %}
+
+## 技术栈
+
+- **编程语言:** {{ meta.languages | join(", ") }}
+{% if meta.frameworks %}- **框架:** {{ meta.frameworks | join(", ") }}
+{% endif %}
+
+## 项目结构
+
+```
+{{ _render_tree(meta.structure, "") }}
+```
+
+## 依赖
+
+{% if meta.dependencies.prod %}
+**生产依赖:**
+{% for dep in meta.dependencies.prod %}- {{ dep }}
+{% endfor %}{% endif %}
+{% if meta.dependencies.dev %}
+**开发依赖:**
+{% for dep in meta.dependencies.dev %}- {{ dep }}
+{% endfor %}{% endif %}
+
+## 快速开始
+
+{% if meta.scripts %}{% for name, cmd in meta.scripts.items() %}
+- `{{ cmd }}` — {{ name }}
+{% endfor %}{% endif %}
+
+{% if meta.entry_points %}
+**入口文件:**
+{% for ep in meta.entry_points %}- {{ ep }}
+{% endfor %}{% endif %}
+
+{% if meta.has_tests %}
+## 测试
+
+该项目包含测试，可使用项目的测试命令运行。
+{% endif %}
+
+{% if meta.interfaces %}
+## 核心接口
+
+{% for iface in meta.interfaces %}
+- `{{ iface.signature }}` — {{ iface.file_path }}
+{% endfor %}{% endif %}
+
+---
+*由 repo2agent 生成*

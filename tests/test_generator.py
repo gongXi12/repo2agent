@@ -82,3 +82,38 @@ def test_generate_agents_md_includes_interfaces(tmp_path):
     output = gen.render_agents_md(meta)
     assert "Key Interfaces" in output
     assert "hello" in output
+
+
+def test_generate_claude_md_zh():
+    meta = analyze_project(FIXTURES / "python_project")
+    gen = Generator()
+    output = gen.render_claude_md(meta, lang="zh")
+    assert "# sample-python" in output
+    assert "编程语言" in output
+    assert "Python" in output
+
+
+def test_generate_agents_md_zh():
+    meta = analyze_project(FIXTURES / "python_project")
+    gen = Generator()
+    output = gen.render_agents_md(meta, lang="zh")
+    assert "sample-python" in output
+    assert "项目概述" in output
+    assert "任务拆解建议" in output
+
+
+def test_generate_contributing_md_zh():
+    meta = analyze_project(FIXTURES / "python_project")
+    gen = Generator()
+    output = gen.render_contributing_md(meta, lang="zh")
+    assert "贡献指南" in output
+    assert "开发环境搭建" in output
+
+
+def test_generate_to_directory_zh(tmp_path):
+    meta = analyze_project(FIXTURES / "python_project")
+    gen = Generator()
+    gen.generate(meta, output_dir=tmp_path, formats=["md"], lang="zh")
+    assert (tmp_path / "CLAUDE.md").exists()
+    claude = (tmp_path / "CLAUDE.md").read_text(encoding="utf-8")
+    assert "编程语言" in claude
