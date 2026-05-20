@@ -54,3 +54,31 @@ def test_generate_copilot_instructions(tmp_path):
     gen = Generator()
     gen.generate(meta, output_dir=tmp_path, formats=["all"])
     assert (tmp_path / ".github" / "copilot-instructions.md").exists()
+
+
+def test_generate_json_includes_interfaces(tmp_path):
+    from repo2agent.models import Interface
+    meta = analyze_project(FIXTURES / "python_project")
+    meta.interfaces.append(Interface(
+        name="test_func", kind="function", file_path="src/main.py",
+        signature="def test_func() -> None"
+    ))
+    gen = Generator()
+    json_output = gen.render_json(meta)
+    import json
+    data = json.loads(json_output)
+    assert len(data["interfaces"]) > 0
+    assert data["interfaces"][0]["name"] == "test_func"
+
+
+def test_generate_agents_md_includes_interfaces(tmp_path):
+    from repo2agent.models import Interface
+    meta = analyze_project(FIXTURES / "python_project")
+    meta.interfaces.append(Interface(
+        name="hello", kind="function", file_path="src/main.py",
+        signature="def hello() -> str"
+    ))
+    gen = Generator()
+    output = gen.render_agents_md(meta)
+    assert "Key Interfaces" in output
+    assert "hello" in output

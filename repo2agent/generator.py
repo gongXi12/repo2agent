@@ -72,6 +72,15 @@ class Generator:
             "has_tests": meta.has_tests,
             "has_docs": meta.has_docs,
             "has_ci": meta.has_ci,
+            "interfaces": [
+                {
+                    "name": i.name,
+                    "kind": i.kind,
+                    "file_path": i.file_path,
+                    "signature": i.signature,
+                }
+                for i in meta.interfaces
+            ],
         }
         return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
